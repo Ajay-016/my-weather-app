@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather App</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(-45deg, #89f7fe, #66a6ff, #ff9a9e, #a18cd1);
+      background-size: 400% 400%;
+      animation: gradientMove 12s ease infinite;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    @keyframes gradientMove {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    .weather-card {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      text-align: center;
+      width: 300px;
+      transition: transform 0.3s ease;
+    }
+
+    .weather-card:hover {
+      transform: scale(1.03);
+    }
+
+    input[type="text"] {
+      width: 80%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      transition: box-shadow 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      box-shadow: 0 0 5px rgba(0,123,255,0.7);
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    .result {
+      font-size: 1.2rem;
+      color: #333;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .location {
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .temp {
+      font-size: 2rem;
+      margin: 10px 0;
+    }
+
+    /* Subtle Footer Styling */
+    .footer {
+      margin-top: 30px;
+      font-size: 1rem;
+      text-align: center;
+      font-weight: 600;
+      color: #ffffff;
+      background: linear-gradient(to right, #ffffff, #d4d4d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 0;
+      animation: fadeInFooter 2s ease-in-out 1s forwards;
+    }
+
+    @keyframes fadeInFooter {
+      to {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="weather-card">
+    <h2>🌤️ Weather Checker</h2>
+    <input type="text" id="locationInput" placeholder="Enter location..." />
+    <br />
+    <button onclick="getWeather()">Get Weather</button>
+    <div class="result" id="weatherResult"></div>
+  </div>
+
+  <!-- Footer Section -->
+  <div class="footer">
+    Made with ❤️ by Ajay — An Aspiring Web Developer.
+  </div>
+
+  <script>
+    async function getWeather() {
+      const location = document.getElementById("locationInput").value;
+      const resultDiv = document.getElementById("weatherResult");
+
+      if (!location) {
+        resultDiv.innerHTML = "❗ Please enter a location.";
+        resultDiv.style.animation = "fadeIn 0.5s ease forwards";
+        return;
+      }
+
+      const apiKey = "b782846890e14fc7a66114252241605";
+      const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${encodeURIComponent(location)}&aqi=yes`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.error) {
+          resultDiv.innerHTML = `⚠️ ${data.error.message}`;
+        } else {
+          resultDiv.innerHTML = `
+            <div class="location">${data.location.name}, ${data.location.country}</div>
+            <div class="temp">${data.current.temp_c}°C</div>
+            <div>Condition: ${data.current.condition.text}</div>
+          `;
+        }
+
+        resultDiv.style.animation = "fadeIn 0.5s ease forwards";
+      } catch (error) {
+        resultDiv.innerHTML = "❌ Failed to fetch weather data.";
+        resultDiv.style.animation = "fadeIn 0.5s ease forwards";
+      }
+    }
+  </script>
+</body>
+</html>
